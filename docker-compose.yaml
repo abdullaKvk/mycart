@@ -4,7 +4,9 @@ services:
   myapp-frontend:
     build:
       context: ./frontend
-    image: abdullam/myapp-frontend:1.10
+    image: abdullam/mycart-frontend:2.10
+    depends_on:
+      - myapp-backend
     environment:
       BACKENDLB: myapp-backend
     ports:
@@ -13,39 +15,21 @@ services:
       - type: volume
         source: myapp-frontend-logvol
         target: /var/log
-  myapp-frontend-logs:
-    build:
-      context: ./awslogs
-    image: abdullam/myapp-frontend-logs:1.10
-    depends_on:
-      - myapp-frontend
-    volumes:
-      - type: volume
-        source: myapp-frontend-logvol
-        target: /mnt/log
-        read_only: true
   myapp-backend:
     build:
       context: ./backend
-    image: abdullam/myapp-backend:1.10
-    depends_on:
-      - myapp-frontend
+    image: abdullam/mycart-backend:2.10
     volumes:
       - type: volume
         source: myapp-backend-logvol
-        target: /mnt/log
-        read_only: true
-  myapp-backend-logs:
-    build:
-      context: ./awslogs
-    image: abdullam/myapp-backend-logs:1.10
-    depends_on:
-      - myapp-backend
+        target: /var/log
+  myapp-db:
+    image: mysql:5.7
     volumes:
       - type: volume
-        source: myapp-backend-logvol
-        target: /mnt/log
-        read_only: true
+        source: myapp-db-logvol
+        target: /var/lib/mysql
 volumes:
   myapp-frontend-logvol:
   myapp-backend-logvol:
+  myapp-db-logvol:
